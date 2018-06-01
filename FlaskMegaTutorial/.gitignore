@@ -175,3 +175,6 @@ venv.bak/
 
 # Do not version DB
 app.db
+
+# i18n files
+messages.pot

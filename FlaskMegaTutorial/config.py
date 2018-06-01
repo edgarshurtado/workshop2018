@@ -16,3 +16,5 @@ class Config():
     ADMINS = ['edsanhu@gmail.com']
 
     POSTS_PER_PAGE = 5
+
+    LANGUAGES = ['en', 'es']
