@@ -9,7 +9,7 @@ def translate(text, source_language, dest_language):
 
     auth = {'Ocp-Apim-Subscription-Key': app.config['MS_TRANSLATOR_KEY']}
 
-    r = requests.get('hhtp://api.microsofttranslator.com/v2/Ajax.svc'
+    r = requests.get('http://api.microsofttranslator.com/v2/Ajax.svc'
                      '/Translate?text={}&from={}&to={}'. format(text, source_language, dest_language),
                      headers=auth)
     if r.status_code != 200:
