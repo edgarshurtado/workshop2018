@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 login = LoginManager(app)
-login.login_view = 'login'
+login.login_view = 'auth.login'
 login.login_message = _l('Please log in to access this page.')
 
 mail = Mail(app)
@@ -29,6 +29,22 @@ bootstrap = Bootstrap(app)
 moment = Moment(app)
 
 babel = Babel(app)
+
+
+'''
+BLUEPRINT REGISTRATIONS.
+
+Since they may have some dependency with the app or plugins, they
+need to go at the bottom
+'''
+from app.errors import bp as errors_bp
+app.register_blueprint(errors_bp)
+
+from app.auth import bp as auth_bp
+app.register_blueprint(auth_bp)
+
+from app.main import bp as main_bp
+app.register_blueprint(main_bp)
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
@@ -68,4 +84,4 @@ def get_locale():
     return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 # Putting this at the end avoids problems with circular imports since routes imports app
-from app import routes, errors, models
+from app import routes, models
