@@ -1,12 +1,13 @@
-from app import app, db
+from app import db
 from app.models import User, Post
-import unittest
 from datetime import datetime, timedelta
+from flask import current_app
+import unittest
 
 
 class UserModelCase(unittest.TestCase):
     def setUp(self):
-        app.config['SQLALCHEMY_DATABASE_URI'] = \
+        current_app.config['SQLALCHEMY_DATABASE_URI'] = \
             'sqlite://'  # Makes SQLAlchemy to use an in-memory SQLite database during the tests
         db.create_all()
 

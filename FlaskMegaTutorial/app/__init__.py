@@ -1,87 +1,103 @@
-from flask import Flask, request
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from flask_login import LoginManager
-import logging
-from logging.handlers import SMTPHandler, RotatingFileHandler
-import os
-from flask_mail import Mail
-from flask_bootstrap import Bootstrap
-from flask_moment import Moment
+from flask import Flask, request, current_app
 from flask_babel import Babel
 from flask_babel import lazy_gettext as _l
+from flask_bootstrap import Bootstrap
+from flask_login import LoginManager
+from flask_mail import Mail
+from flask_migrate import Migrate
+from flask_moment import Moment
+from flask_sqlalchemy import SQLAlchemy
+from logging.handlers import SMTPHandler, RotatingFileHandler
+import logging
+import os
 
-app = Flask(__name__)
-app.config.from_object(Config)
+db = SQLAlchemy()
+migrate = Migrate()
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-login = LoginManager(app)
+login = LoginManager()
 login.login_view = 'auth.login'
 login.login_message = _l('Please log in to access this page.')
 
-mail = Mail(app)
+mail = Mail()
 
-bootstrap = Bootstrap(app)
+bootstrap = Bootstrap()
 
-moment = Moment(app)
+moment = Moment()
 
-babel = Babel(app)
+babel = Babel()
 
 
-'''
-BLUEPRINT REGISTRATIONS.
+def create_app(config_class=Config):
+    app = Flask(__name__)
+    app.config.from_object(config_class)
 
-Since they may have some dependency with the app or plugins, they
-need to go at the bottom
-'''
-from app.errors import bp as errors_bp
-app.register_blueprint(errors_bp)
+    db.init_app(app)
+    migrate.init_app(app, db)
 
-from app.auth import bp as auth_bp
-app.register_blueprint(auth_bp)
+    login.init_app(app)
 
-from app.main import bp as main_bp
-app.register_blueprint(main_bp)
+    mail.init_app(app)
 
-if not app.debug:
-    if app.config['MAIL_SERVER']:
-        auth = None
-        if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
-            aut = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+    bootstrap.init_app(app)
 
-        secure = None
+    moment.init_app(app)
 
-        if app.config['MAIL_USE_TLS']:
-            secure = ()
+    babel.init_app(app)
 
-        mail_handler = SMTPHandler(
-            mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
-            fromaddr='no-reply@' + app.config['MAIL_SERVER'],
-            toaddrs=app.config['ADMINS'], subject='Microblog Failure',
-            credentials=auth, secure=secure
-        )
+    '''
+    BLUEPRINT REGISTRATIONS.
 
-        mail_handler.setLevel(logging.ERROR)
-        app.logger.addHandler(mail_handler)
+    Since they may have some dependency with the app or plugins, they
+    need to go at the bottom
+    '''
+    from app.errors import bp as errors_bp
+    app.register_blueprint(errors_bp)
 
-    if not os.path.exists('logs'):
-        os.mkdir('logs')
-    file_handler = RotatingFileHandler('logs/microblog.log', maxBytes=10240, backupCount=10)
-    file_handler.setFormatter(logging.Formatter(
-        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d'
-    ))
-    file_handler.setLevel(logging.INFO)
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp)
 
-    app.logger.addHandler(file_handler)
-    app.logger.setLevel(logging.INFO)
-    app.logger.info('Microblog startup')
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
+
+    if not app.debug and not app.testing:
+        if app.config['MAIL_SERVER']:
+            auth = None
+            if app.config['MAIL_USERNAME'] or app.config['MAIL_PASSWORD']:
+                aut = (app.config['MAIL_USERNAME'], app.config['MAIL_PASSWORD'])
+
+            secure = None
+
+            if app.config['MAIL_USE_TLS']:
+                secure = ()
+
+            mail_handler = SMTPHandler(
+                mailhost=(app.config['MAIL_SERVER'], app.config['MAIL_PORT']),
+                fromaddr='no-reply@' + app.config['MAIL_SERVER'],
+                toaddrs=app.config['ADMINS'], subject='Microblog Failure',
+                credentials=auth, secure=secure
+            )
+
+            mail_handler.setLevel(logging.ERROR)
+            app.logger.addHandler(mail_handler)
+
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+        file_handler = RotatingFileHandler('logs/microblog.log', maxBytes=10240, backupCount=10)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d'
+        ))
+        file_handler.setLevel(logging.INFO)
+
+        app.logger.addHandler(file_handler)
+        app.logger.setLevel(logging.INFO)
+        app.logger.info('Microblog startup')
+
+    return app
+
 
 @babel.localeselector
 def get_locale():
-    return request.accept_languages.best_match(app.config['LANGUAGES'])
+    return request.accept_languages.best_match(current_app.config['LANGUAGES'])
 
-# Putting this at the end avoids problems with circular imports since routes imports app
-from app import routes, models
+from app import models # At the end because models imports db
