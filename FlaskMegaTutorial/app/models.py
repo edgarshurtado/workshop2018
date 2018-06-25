@@ -47,7 +47,7 @@ class SearchableMixin(object):
     @classmethod
     def reindex(cls):
         for obj in cls.query:
-            add_to_index(cls.__tableame__, obj)
+            add_to_index(cls.__tablename__, obj)
 
 
 db.event.listen(db.session, 'before_commit', SearchableMixin.before_commit)
@@ -145,12 +145,12 @@ class User(db.Model, UserMixin):
 
 
 class Post(SearchableMixin, db.Model):
+    __searchable__ = ['body']
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.String(140))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
-    __searchable__ = ['body']
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
