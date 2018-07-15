@@ -189,3 +189,9 @@ def search():
         next_url=next_url,
         prev_url=prev_url
     )
+
+@bp.route('/send_message/<recipient>', methods=['GET', 'POST'])
+@login_required
+def send_message(recipient):
+    user = User.query.filter_by(username=recipient).first_or_404()
+    form =

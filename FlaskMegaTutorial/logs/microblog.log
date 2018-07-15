@@ -67,3 +67,5 @@ Traceback (most recent call last):
     super(SearchForm, self).__ini__(*args, **kwargs)
 AttributeError: 'super' object has no attribute '__ini__'
 2018-06-25 18:55:27,492 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-15 12:57:11,569 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-15 12:57:18,979 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
