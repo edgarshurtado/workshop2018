@@ -158,6 +158,10 @@ class User(db.Model, UserMixin):
             return
         return User.query.get(id)
 
+    def update_last_message_read_time(self, utc_datetime=datetime.utcnow()):
+        self.last_message_read_time = utc_datetime
+        db.session.commit()
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
