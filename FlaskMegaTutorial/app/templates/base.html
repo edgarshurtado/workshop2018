@@ -24,6 +24,18 @@
                     {% if current_user.is_anonymous %}
                         <li><a href="{{ url_for('auth.login') }}">Login</a></li>
                     {% else %}
+                    <li>
+                        <a href="{{ url_for('main.messages') }}">
+                            {{ _('Messages') }}
+                            {% set new_messages = current_user.new_messages() %}
+                            <span class="badge" id="message_count"
+                                  style="visibility: {% if new_messages %}visible {% else %} hidden {% endif %}">
+
+                                {{ new_messages }}
+
+                            </span>
+                        </a>
+                    </li>
                     <li><a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a></li>
                     <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
                     {% endif %}
@@ -70,6 +82,11 @@
         }).fail(function(){
             $(destElem).text("{{ _('Error: Could not contact server.') }}")
         })
+    }
+
+    function set_message_count(count){
+        $('#message_count').text(count)
+        $('#message_count').css('visibility', count ? 'visible': 'hidden')
     }
     </script>
 {% endblock scripts %}
