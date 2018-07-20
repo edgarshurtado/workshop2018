@@ -200,6 +200,10 @@ def send_message(recipient):
         msg = Message(author=current_user, recipient=user, body=form.message.data)
         db.session.add(msg)
         db.session.commit()
+
+        user.add_notification('unread_message_count', user.new_messages())
+
+
         flash(_('Your message has been sent.'))
         return redirect(url_for('main.user', username=recipient))
     return render_template('send_message.html', title=_('Send Message'), form=form, recipient=recipient)
@@ -218,6 +222,7 @@ def messages():
 
     last_retrieved_message_timestamp = messages[-1].timestamp
     current_user.update_last_message_read_time(last_retrieved_message_timestamp)
+    current_user.add_notification('unread_message_count', 0)
 
     next_url = url_for('main.messages', page=messages.next_num) \
         if messages.has_next else None
