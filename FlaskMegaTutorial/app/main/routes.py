@@ -5,6 +5,7 @@ from app.main.forms import MessageForm
 from app.main.forms import PostForm
 from app.main.forms import SearchForm
 from app.models import Message
+from app.models import Notification
 from app.models import Post
 from app.models import User
 from app.translate import translate
@@ -21,6 +22,7 @@ from flask_babel import get_locale
 from flask_login import current_user
 from flask_login import login_required
 from guess_language import guess_language
+from datetime import datetime
 
 URL_NAMES = {
     'index': 'main.index',
@@ -216,12 +218,12 @@ def messages():
         Message.timestamp.desc()
     ).paginate(
         page,
-        current_app.config['POST_PER_PAGE'],
+        current_app.config['POSTS_PER_PAGE'],
         False
     )
 
-    last_retrieved_message_timestamp = messages[-1].timestamp
-    current_user.update_last_message_read_time(last_retrieved_message_timestamp)
+    last_read_messages_timestamp = datetime.utcnow()
+    current_user.update_last_message_read_time(last_read_messages_timestamp)
     current_user.add_notification('unread_message_count', 0)
 
     next_url = url_for('main.messages', page=messages.next_num) \
@@ -236,3 +238,17 @@ def messages():
         next_url=next_url,
         prev_url=prev_url
     )
+
+@bp.route('/notifications')
+@login_required
+def notifications():
+    since = request.args.get('since', 0.0, type=float)
+    notifications = current_user.notifications.filter(
+        Notification.timestamp > since
+    ).order_by(Notification.timestamp.asc())
+
+    return jsonify([{
+        'name': n.name,
+        'data': n.get_data(),
+        'timestamp': n.timestamp
+    } for n in notifications])
