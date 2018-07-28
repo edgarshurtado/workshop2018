@@ -12,3 +12,4 @@ guess-language_spirit
 requests
 python-dotenv
 elasticsearch
+rq
