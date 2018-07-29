@@ -71,3 +71,10 @@ AttributeError: 'super' object has no attribute '__ini__'
 2018-07-15 12:57:18,979 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
 2018-07-20 20:47:46,346 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
 2018-07-20 20:48:34,648 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:34:51,199 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:34:55,790 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:44:09,893 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:45:28,141 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:46:48,145 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:47:06,477 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
+2018-07-29 17:47:24,536 INFO: Microblog startup [in /Users/Rumil/Documents/git-repos/Workshop2018/FlaskMegaTutorial/app/__init__.py:98
