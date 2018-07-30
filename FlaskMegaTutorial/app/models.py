@@ -156,13 +156,6 @@ class User(db.Model, UserMixin):
         db.session.commit()
         return task
 
-    def get_tasks_in_progress(self):
-        return Task.query.filter_by(user=self, complete=False).all()
-
-    def get_task_in_progress(self, name):
-        return Task.query.filter_by(name=name, user=self, complete=False).first()
-
-
     @staticmethod
     def verify_reset_password_token(token):
         try:
@@ -188,6 +181,12 @@ class User(db.Model, UserMixin):
         db.session.commit()
 
         return n
+
+    def get_tasks_in_progress(self):
+        return Task.query.filter_by(user=self, complete=False).all()
+
+    def get_task_in_progress(self, name):
+        return Task.query.filter_by(name=name, user=self, complete=False).first()
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
