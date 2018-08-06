@@ -13,3 +13,4 @@ requests
 python-dotenv
 elasticsearch
 rq
+httpie # to make http request from console

@@ -1,0 +1,78 @@
+from app import db
+from app.api import bp
+from app.api.errors import bad_request
+from app.models import User
+from flask import jsonify, request, url_for
+
+
+def get_per_page():
+    return min(request.args.get('per_page', 10, type=int), 100)
+
+
+def get_page():
+    return request.args.get('page', 1, type=int)
+
+
+@bp.route('/user/<int:id>', methods=['GET'])
+def get_user(id):
+    return jsonify(User.query.get_or_404(id).to_dict())
+
+
+@bp.route('/users', methods=['GET'])
+def get_users():
+    page = get_page()
+    per_page = get_per_page()
+    data = User.to_collection_dict(User.query, page, per_page, 'api.get_users')
+    return jsonify(data)
+
+
+@bp.route('/users/<int:id>/followers', methods=['GET'])
+def get_followers(id):
+    data = User.to_collection_dict(
+        query=User.query.get_or_404(id).followers,
+        page=get_page(),
+        per_page=get_per_page(),
+        endpoint='api.get_followers',
+        id=id
+    )
+    return jsonify(data)
+
+
+@bp.route('/users/<int:id>/followed', methods=['GET'])
+def get_followed(id):
+    data = User.to_collection_dict(
+        query=User.query.get_or_404(id).followed,
+        page=get_page(),
+        per_page=get_per_page(),
+        endpoint='api.get_followed',
+        id=id
+    )
+    return jsonify(data)
+
+
+@bp.route('/users', methods=['POST'])
+def create_user():
+    data = request.get_json() or {}
+
+    if 'username' not in data or 'email' not in data or 'password' not in data:
+       return bad_request('must include username, email and password fields')
+    if User.query.filter_by(username=data['username']).first():
+       return bad_request('please use a different username')
+    if User.query.filter_by(email=data['email']).first():
+       return bad_request('please use a different email')
+
+    user = User()
+    user.from_dict(data, new_user=True)
+    db.session.add(user)
+    db.session.commit()
+    response = jsonify(user.to_dict())
+    response.status_code = 201
+    response.headers['Location'] = url_for('api.get_user', id=user.id)
+    return response
+
+
+
+
+@bp.route('/users/<int:id>', methods=['PUT'])
+def update_user(id):
+    pass

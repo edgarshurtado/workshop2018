@@ -26,4 +26,4 @@ class Config:
 
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
 
-    REDIS_URL = os.envirion.get('REDIS_URL') or 'redis://'
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
