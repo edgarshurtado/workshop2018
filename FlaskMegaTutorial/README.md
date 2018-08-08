@@ -33,3 +33,17 @@ export FLASK_APP=microbolog.py
 
 This way anytime you activate the virtual env you'll already get set this
 env variable needed for flask
+
+
+## Using HTTPie
+
+```
+(venv) $ http GET http://localhost:5000/api/users
+(venv) $ http POST http://localhost:5000/api/users username=alice password=dog \
+    email=alice@example.com "about_me=Hello, my name is Alice!"
+(venv) $ http PUT http://localhost:5000/api/users/2 "about_me=Hi, I am Miguel"
+
+(venv) $ http --auth <username>:<password> POST http://localhost:5000/api/tokens
+(venv) $ http GET http://localhost:5000/api/users/1 \
+    "Authorization:Bearer pC1Nu9wwyNt8VCj1trWilFdFI276AcbS"
+```
