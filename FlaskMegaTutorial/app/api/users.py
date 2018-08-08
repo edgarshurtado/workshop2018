@@ -3,6 +3,7 @@ from app.api import bp
 from app.api.errors import bad_request
 from app.models import User
 from flask import jsonify, request, url_for
+from app.api.auth import token_auth
 
 
 def get_per_page():
@@ -14,11 +15,13 @@ def get_page():
 
 
 @bp.route('/user/<int:id>', methods=['GET'])
+@token_auth.login_required
 def get_user(id):
     return jsonify(User.query.get_or_404(id).to_dict())
 
 
 @bp.route('/users', methods=['GET'])
+@token_auth.login_required
 def get_users():
     page = get_page()
     per_page = get_per_page()
@@ -27,6 +30,7 @@ def get_users():
 
 
 @bp.route('/users/<int:id>/followers', methods=['GET'])
+@token_auth.login_required
 def get_followers(id):
     data = User.to_collection_dict(
         query=User.query.get_or_404(id).followers,
@@ -39,6 +43,7 @@ def get_followers(id):
 
 
 @bp.route('/users/<int:id>/followed', methods=['GET'])
+@token_auth.login_required
 def get_followed(id):
     data = User.to_collection_dict(
         query=User.query.get_or_404(id).followed,
@@ -51,6 +56,7 @@ def get_followed(id):
 
 
 @bp.route('/users', methods=['POST'])
+@token_auth.login_required
 def create_user():
     data = request.get_json() or {}
 
@@ -71,8 +77,23 @@ def create_user():
     return response
 
 
-
-
 @bp.route('/users/<int:id>', methods=['PUT'])
+@token_auth.login_required
 def update_user(id):
-    pass
+    def update_is_collading_with_other_user(user, request_data):
+        return ('username' in request_data and request_data['username'] != user.username and
+                User.query.filter_by(username=request_data['username']).first()) \
+               or \
+               ('email' in request_data and request_data['email'] != user.email and
+                User.query.filter_by(email=request_data['email']).first())
+
+    user = User.query.get_or_404(id)
+    data = request.get_json() or {}
+
+    if update_is_collading_with_other_user(user, data):
+        bad_request("can't use that username or email")
+    else:
+        user.from_dict(data, new_user=False)
+        db.session.commit()
+        return jsonify(user.to_dict())
+
