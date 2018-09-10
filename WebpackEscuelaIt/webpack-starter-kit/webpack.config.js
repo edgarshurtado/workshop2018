@@ -1,6 +1,7 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const MiniCssEsctracPlugin = require('mini-css-extract-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+var HtmlWebpackPlugin = require('html-webpack-plugin')
+var MiniCssExtractPlugin = require('mini-css-extract-plugin')
+var CleanWebpackPlugin = require('clean-webpack-plugin')
+var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = {
     //entry:{},
@@ -27,8 +28,9 @@ module.exports = {
                 test:/\.(css|scss)$/,
                 use: [
                     'style-loader',
-                    MiniCssEsctracPlugin.loader,
-                    'css-loader?minimize&sourceMap',
+                    MiniCssExtractPlugin.loader,
+                    'css-loader?sourceMap',
+                    'postcss-loader?sourceMap',
                     'resolve-url-loader',
                     'sass-loader?outputStyle=compressed&sourceMap'
                 ]
@@ -40,7 +42,7 @@ module.exports = {
                 ]
             },
             {
-                test: /\.(ttf|woff2?|mp4)$/i,
+                test: /\.(ttf|eot|woff?2|mp4)$/i,
                 use: 'file-loader?name=assets/[name].[ext]'
             }
         ]
@@ -51,9 +53,14 @@ module.exports = {
             template:'./src/template.html',
             filename:'./index.html' // takes output folder as reference
         }),
-        new MiniCssEsctracPlugin({
+        new MiniCssExtractPlugin({
             filename:'[name].css',
             chunkFilename:'[id].css' // avoid cache
+        }),
+        new OptimizeCssAssetsPlugin({
+            cssProcessorPluginOptions: {
+                preset: ['default', {discardComments: { removeAll: true}}]
+            }
         })
     ]
 }

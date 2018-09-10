@@ -1,3 +1,8 @@
+@font-face {
+  font-family: gamja-flower;
+  src: url('./fonts/GamjaFlower-Regular.ttf');
+}
+
 html{
   border: solid 1px blue;
   background: {
@@ -5,4 +10,19 @@ html{
     image: url('./img/spider-man.jpeg');
     repeat: no-repeat;
   }
+  font:{
+    family: gamja-flower;
+  }
+}
+
+.grid {
+  display: grid;
+}
+
+.flexbox{
+  display: flex;
+}
+
+.transform {
+  transform: rotate(80deg);
 }
