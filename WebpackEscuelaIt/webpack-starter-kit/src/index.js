@@ -4,3 +4,4 @@ import data from './data.json' // A partir de Webpack4 no hace falta añadir un 
 
 console.log(...['hola', 'mundo'])
 console.log(data, data.name)
+

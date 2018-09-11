@@ -4,8 +4,13 @@ var CleanWebpackPlugin = require('clean-webpack-plugin')
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 
 module.exports = {
-    //entry:{},
-    //output:{},
+    entry:{
+        js: './src/index.js',
+        vanilla: './src/hello_vanilla.js'
+    },
+    output:{
+        filename:'[name].[chunkhash].js'
+    },
     module:{
         rules:[
             {
@@ -38,7 +43,8 @@ module.exports = {
             {
                 test: /\.(jpe?g|png|gif|svg|webpg)$/i,
                 use: [
-                    'file-loader?name=assets/[name].[ext]'
+                    'file-loader?name=assets/[name].[ext]',
+                    'image-webpack-loader?bypassOnDebug'
                 ]
             },
             {
@@ -51,7 +57,15 @@ module.exports = {
         new CleanWebpackPlugin(['dist/**/*.*']),
         new HtmlWebpackPlugin({
             template:'./src/template.html',
-            filename:'./index.html' // takes output folder as reference
+            filename:'./index.html', // takes output folder as reference
+            hash: true,
+            chunks: ['js']
+        }),
+        new HtmlWebpackPlugin({
+            template:'./src/template.html',
+            filename:'./hello-vanilla.html', // takes output folder as reference
+            hash: true,
+            chunks: ['vanilla']
         }),
         new MiniCssExtractPlugin({
             filename:'[name].css',
